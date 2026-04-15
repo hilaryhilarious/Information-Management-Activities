@@ -1,0 +1,104 @@
+╔═══════════════════════════════════════════════════════════════╗
+║           EvenTrix - Complete Source Code Download            ║
+║                   Mindoro State University                     ║
+╚═══════════════════════════════════════════════════════════════╝
+
+📦 DOWNLOAD OPTIONS:
+
+Option 1: Download ZIP Archive
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+File: /app/eventrix-complete-source.zip
+Size: ~220KB
+Contains: All 45+ source files, database, documentation
+
+To download:
+1. Look for the file browser/download option in your interface
+2. Navigate to: /app/eventrix-complete-source.zip
+3. Click download
+
+Option 2: Download TAR.GZ Archive
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+File: /app/eventrix-full-source.tar.gz
+Size: ~218KB
+Contains: Same as ZIP
+
+Option 3: Copy Individual Files
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+All files are in: /app/project-root/
+
+You can browse and download individual files from:
+- /app/project-root/api/           (Backend PHP)
+- /app/project-root/public/        (Frontend HTML/JS/CSS)
+- /app/project-root/database/      (SQL Schema)
+
+📋 WHAT'S INCLUDED:
+
+✓ Backend API (10 PHP files)
+  - Authentication system
+  - Event management
+  - Scoring & rankings
+  - Database operations
+
+✓ Frontend (15 HTML pages)
+  - Landing page
+  - Dashboard
+  - All application modules
+  - Login/Register
+
+✓ Components (3 files)
+  - Sidebar navigation
+  - Navbar
+  - Footer
+
+✓ JavaScript (4 files)
+  - API wrapper
+  - Live score polling
+  - Authentication
+  - Scoring interface
+
+✓ Styling
+  - Compiled Tailwind CSS
+  - Custom MINSU theme
+
+✓ Database
+  - Complete MySQL schema
+  - Sample data included
+
+✓ Documentation
+  - README.md (comprehensive guide)
+  - Setup instructions
+  - API documentation
+
+🚀 AFTER DOWNLOAD:
+
+1. Extract the archive:
+   unzip eventrix-complete-source.zip
+   OR
+   tar -xzf eventrix-full-source.tar.gz
+
+2. You'll get a folder: project-root/
+
+3. Follow setup in README.md
+
+4. Requirements:
+   - PHP 8.x
+   - MySQL/MariaDB
+   - Web browser
+
+5. Quick start:
+   cd project-root/public
+   php -S localhost:8090
+
+6. Access: http://localhost:8090
+   Login: admin@eventrix.com / password
+
+📞 NEED HELP?
+
+Check these files in the download:
+- README.md (full documentation)
+- DEPLOYMENT_CHECKLIST.md (setup guide)
+- HOW_TO_ACCESS.md (file structure)
+
+═══════════════════════════════════════════════════════════════
+System ready for production deployment! 🎉
+═══════════════════════════════════════════════════════════════
