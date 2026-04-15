@@ -1,0 +1,15 @@
+<nav class="bg-primary text-white py-4 shadow-lg" data-testid="navbar">
+    <div class="container mx-auto px-4 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+            <img src="https://images.unsplash.com/photo-1721441906254-b5d28d9114f4?crop=entropy&cs=srgb&fm=jpg&w=150&q=85" alt="MINSU Logo" class="h-10 w-10 rounded-full object-cover">
+            <div>
+                <h1 class="text-xl font-bold">EvenTrix</h1>
+                <p class="text-xs text-soft">Mindoro State University</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-6">
+            <span class="text-soft" id="userNameDisplay" data-testid="user-name-display">User</span>
+            <button onclick="logout()" class="px-4 py-2 bg-accent hover:bg-soft hover:text-primary rounded-lg transition-colors" data-testid="logout-btn">Logout</button>
+        </div>
+    </div>
+</nav>

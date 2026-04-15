@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Scores - EvenTrix</title>
+    <link href="/assets/css/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .main-content { margin-left: 256px; }
+        @media (max-width: 768px) {
+            .main-content { margin-left: 0; }
+        }
+    </style>
+</head>
+<body class="bg-soft">
+    <div id="sidebar-container"></div>
+    
+    <div class="main-content min-h-screen">
+        <div id="navbar-container"></div>
+        
+        <main class="p-8">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-primary" data-testid="live-scores-title">Live Scores</h2>
+                <p class="text-gray-600 mt-2">Real-time event rankings and scores</p>
+            </div>
+            
+            <!-- Event Selector -->
+            <div class="card mb-8">
+                <label class="block text-gray-700 font-semibold mb-2">Select Event</label>
+                <select id="eventSelector" class="input-field" data-testid="event-selector">
+                    <option value="">Loading events...</option>
+                </select>
+            </div>
+            
+            <!-- Live Score Display -->
+            <div class="card">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-bold text-primary" data-testid="rankings-heading">Rankings</h3>
+                    <div class="text-sm text-gray-500">
+                        <span>Last updated: </span>
+                        <span id="lastUpdated" class="font-semibold" data-testid="last-updated-time">Never</span>
+                    </div>
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full" data-testid="live-scores-table">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Rank</th>
+                                <th class="px-6 py-3 text-left">Participant/Team</th>
+                                <th class="px-6 py-3 text-left">ID/Code</th>
+                                <th class="px-6 py-3 text-left">Total Score</th>
+                            </tr>
+                        </thead>
+                        <tbody id="liveScoresBody" data-testid="live-scores-body">
+                            <tr>
+                                <td colspan="4" class="text-center py-8 text-gray-500">Select an event to view live scores</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+        
+        <div id="footer-container"></div>
+    </div>
+    
+    <script src="/assets/js/main.js"></script>
+    <script src="/assets/js/live.js"></script>
+    <script>
+        let currentUser = null;
+        
+        // Load components
+        async function loadComponent(elementId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (error) {
+                console.error('Error loading component:', error);
+            }
+        }
+        
+        // Check authentication
+        async function initLiveScores() {
+            currentUser = await checkAuth();
+            // Allow public access to live scores
+            loadEvents();
+        }
+        
+        // Load available events
+        async function loadEvents() {
+            try {
+                const response = await fetch('/api/get_events.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const select = document.getElementById('eventSelector');
+                    select.innerHTML = '<option value="">Select an event</option>' + 
+                        data.events.map(event => 
+                            `<option value="${event.event_id}">${event.event_name} (${event.status})</option>`
+                        ).join('');
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+        
+        // Event selector change handler
+        document.addEventListener('DOMContentLoaded', () => {
+            const eventSelector = document.getElementById('eventSelector');
+            if (eventSelector) {
+                eventSelector.addEventListener('change', (e) => {
+                    const eventId = e.target.value;
+                    if (eventId) {
+                        stopLiveScorePolling();
+                        startLiveScorePolling(eventId, 5000); // Poll every 5 seconds
+                    } else {
+                        stopLiveScorePolling();
+                        document.getElementById('liveScoresBody').innerHTML = '<tr><td colspan="4" class="text-center py-8 text-gray-500">Select an event to view live scores</td></tr>';
+                    }
+                });
+            }
+        });
+        
+        // Cleanup on page unload
+        window.addEventListener('beforeunload', () => {
+            stopLiveScorePolling();
+        });
+        
+        // Initialize
+        loadComponent('sidebar-container', '/components/sidebar.html');
+        loadComponent('navbar-container', '/components/navbar.html');
+        loadComponent('footer-container', '/components/footer.html');
+        initLiveScores();
+    </script>
+</body>
+</html>

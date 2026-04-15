@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Participants - EvenTrix</title>
+    <link href="/assets/css/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .main-content { margin-left: 256px; }
+    </style>
+</head>
+<body class="bg-soft">
+    <div id="sidebar-container"></div>
+    
+    <div class="main-content min-h-screen">
+        <div id="navbar-container"></div>
+        
+        <main class="p-8">
+            <div class="mb-8 flex justify-between items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-primary" data-testid="participants-title">Participants & Teams</h2>
+                    <p class="text-gray-600 mt-2">Manage event participants and teams</p>
+                </div>
+                <button onclick="showAddModal()" class="btn-primary" data-testid="add-participant-btn">+ Add Participant</button>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="mb-6 flex space-x-4" data-testid="participant-tabs">
+                <button onclick="switchTab('participants')" class="px-6 py-2 rounded-lg bg-accent text-white font-semibold" id="tab-participants" data-testid="tab-participants">Participants</button>
+                <button onclick="switchTab('teams')" class="px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-semibold" id="tab-teams" data-testid="tab-teams">Teams</button>
+            </div>
+            
+            <!-- Participants List -->
+            <div class="card" id="participantsContent" data-testid="participants-content">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="px-6 py-3 text-left">ID</th>
+                                <th class="px-6 py-3 text-left">Name</th>
+                                <th class="px-6 py-3 text-left">Number</th>
+                                <th class="px-6 py-3 text-left">Team</th>
+                                <th class="px-6 py-3 text-left">Contact</th>
+                                <th class="px-6 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="participantsBody" data-testid="participants-body">
+                            <tr>
+                                <td colspan="6" class="text-center py-8 text-gray-500">Loading participants...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- Teams List -->
+            <div class="card hidden" id="teamsContent" data-testid="teams-content">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Team Code</th>
+                                <th class="px-6 py-3 text-left">Team Name</th>
+                                <th class="px-6 py-3 text-left">Members</th>
+                                <th class="px-6 py-3 text-left">Description</th>
+                                <th class="px-6 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamsBody" data-testid="teams-body">
+                            <tr>
+                                <td colspan="5" class="text-center py-8 text-gray-500">Loading teams...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+        
+        <div id="footer-container"></div>
+    </div>
+    
+    <script src="/assets/js/main.js"></script>
+    <script>
+        let currentTab = 'participants';
+        
+        async function loadComponent(elementId, componentPath) {
+            const response = await fetch(componentPath);
+            const html = await response.text();
+            document.getElementById(elementId).innerHTML = html;
+        }
+        
+        async function initParticipants() {
+            const user = await checkAuth();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+            loadParticipants();
+            loadTeams();
+        }
+        
+        async function loadParticipants() {
+            try {
+                const response = await fetch('/api/participants.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayParticipants(data.participants);
+                }
+            } catch (error) {
+                console.error('Error loading participants:', error);
+            }
+        }
+        
+        async function loadTeams() {
+            try {
+                const response = await fetch('/api/teams.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayTeams(data.teams);
+                }
+            } catch (error) {
+                console.error('Error loading teams:', error);
+            }
+        }
+        
+        function displayParticipants(participants) {
+            const tbody = document.getElementById('participantsBody');
+            if (participants.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center py-8 text-gray-500">No participants found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = participants.map(p => `
+                <tr class="border-b hover:bg-soft transition-colors" data-testid="participant-row-${p.participant_id}">
+                    <td class="px-6 py-4 font-semibold">${p.participant_id}</td>
+                    <td class="px-6 py-4">${p.first_name} ${p.last_name}</td>
+                    <td class="px-6 py-4 text-gray-600">${p.participant_number || '-'}</td>
+                    <td class="px-6 py-4 text-gray-600">${p.team_name || 'Independent'}</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${p.email || p.phone || '-'}</td>
+                    <td class="px-6 py-4">
+                        <button onclick="editParticipant(${p.participant_id})" class="text-accent hover:underline text-sm" data-testid="edit-participant-${p.participant_id}">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function displayTeams(teams) {
+            const tbody = document.getElementById('teamsBody');
+            if (teams.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">No teams found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = teams.map(t => `
+                <tr class="border-b hover:bg-soft transition-colors" data-testid="team-row-${t.team_id}">
+                    <td class="px-6 py-4 font-semibold">${t.team_code || '-'}</td>
+                    <td class="px-6 py-4 font-bold text-primary">${t.team_name}</td>
+                    <td class="px-6 py-4 text-gray-600">${t.member_count} members</td>
+                    <td class="px-6 py-4 text-sm text-gray-600">${t.description || '-'}</td>
+                    <td class="px-6 py-4">
+                        <button onclick="editTeam(${t.team_id})" class="text-accent hover:underline text-sm" data-testid="edit-team-${t.team_id}">Edit</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        function switchTab(tab) {
+            currentTab = tab;
+            if (tab === 'participants') {
+                document.getElementById('tab-participants').className = 'px-6 py-2 rounded-lg bg-accent text-white font-semibold';
+                document.getElementById('tab-teams').className = 'px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-semibold';
+                document.getElementById('participantsContent').classList.remove('hidden');
+                document.getElementById('teamsContent').classList.add('hidden');
+            } else {
+                document.getElementById('tab-teams').className = 'px-6 py-2 rounded-lg bg-accent text-white font-semibold';
+                document.getElementById('tab-participants').className = 'px-6 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 font-semibold';
+                document.getElementById('teamsContent').classList.remove('hidden');
+                document.getElementById('participantsContent').classList.add('hidden');
+            }
+        }
+        
+        function showAddModal() {
+            showNotification('Add participant functionality coming soon', 'info');
+        }
+        
+        function editParticipant(id) {
+            showNotification('Edit functionality coming soon', 'info');
+        }
+        
+        function editTeam(id) {
+            showNotification('Edit functionality coming soon', 'info');
+        }
+        
+        loadComponent('sidebar-container', '/components/sidebar.html');
+        loadComponent('navbar-container', '/components/navbar.html');
+        loadComponent('footer-container', '/components/footer.html');
+        initParticipants();
+    </script>
+</body>
+</html>

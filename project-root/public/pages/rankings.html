@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rankings - EvenTrix</title>
+    <link href="/assets/css/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .main-content { margin-left: 256px; }
+    </style>
+</head>
+<body class="bg-soft">
+    <div id="sidebar-container"></div>
+    
+    <div class="main-content min-h-screen">
+        <div id="navbar-container"></div>
+        
+        <main class="p-8">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-primary" data-testid="rankings-title">Event Rankings</h2>
+                <p class="text-gray-600 mt-2">View comprehensive rankings and scores</p>
+            </div>
+            
+            <!-- Event Info -->
+            <div class="card mb-8" id="eventInfo" data-testid="event-info">
+                <p class="text-gray-500">Loading event information...</p>
+            </div>
+            
+            <!-- Rankings Table -->
+            <div class="card">
+                <h3 class="text-2xl font-bold text-primary mb-6" data-testid="rankings-table-heading">Final Rankings</h3>
+                <div class="overflow-x-auto">
+                    <table class="w-full" data-testid="rankings-table">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Rank</th>
+                                <th class="px-6 py-3 text-left">Participant/Team</th>
+                                <th class="px-6 py-3 text-left">ID/Code</th>
+                                <th class="px-6 py-3 text-left">Total Score</th>
+                                <th class="px-6 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="rankingsBody" data-testid="rankings-body">
+                            <tr>
+                                <td colspan="5" class="text-center py-8 text-gray-500">Loading rankings...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+        
+        <div id="footer-container"></div>
+    </div>
+    
+    <script src="/assets/js/main.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const eventId = urlParams.get('event_id');
+        
+        async function loadComponent(elementId, componentPath) {
+            const response = await fetch(componentPath);
+            const html = await response.text();
+            document.getElementById(elementId).innerHTML = html;
+        }
+        
+        async function initRankings() {
+            if (!eventId) {
+                document.getElementById('eventInfo').innerHTML = '<p class="text-red-500">No event selected</p>';
+                return;
+            }
+            
+            await loadEventInfo();
+            await loadRankings();
+        }
+        
+        async function loadEventInfo() {
+            try {
+                const response = await fetch(`/api/get_events.php?event_id=${eventId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    const event = data.event;
+                    document.getElementById('eventInfo').innerHTML = `
+                        <h3 class="text-2xl font-bold text-primary mb-2">${event.event_name}</h3>
+                        <p class="text-gray-600 mb-4">${event.description || ''}</p>
+                        <div class="flex space-x-6 text-sm">
+                            <span class="px-4 py-2 rounded-full ${event.status === 'ongoing' ? 'bg-green-100 text-green-700' : event.status === 'upcoming' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}">${event.status}</span>
+                            <span class="text-gray-600"><strong>Type:</strong> ${event.event_type || 'N/A'}</span>
+                            <span class="text-gray-600"><strong>Participants:</strong> ${event.participant_count}</span>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                console.error('Error loading event info:', error);
+            }
+        }
+        
+        async function loadRankings() {
+            try {
+                const response = await fetch(`/api/get_rankings.php?event_id=${eventId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayRankings(data.rankings);
+                }
+            } catch (error) {
+                console.error('Error loading rankings:', error);
+            }
+        }
+        
+        function displayRankings(rankings) {
+            const tbody = document.getElementById('rankingsBody');
+            if (rankings.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="text-center py-8 text-gray-500">No rankings available yet</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = rankings.map((rank, index) => {
+                const name = rank.team_name || `${rank.p_first_name} ${rank.p_last_name}`;
+                const identifier = rank.team_code || rank.participant_number || '-';
+                const position = rank.rank_position || (index + 1);
+                const medal = position === 1 ? '🥇' : position === 2 ? '🥈' : position === 3 ? '🥉' : '';
+                
+                return `
+                    <tr class="border-b hover:bg-soft transition-colors" data-testid="rank-row-${position}">
+                        <td class="px-6 py-4 font-bold text-xl ${position <= 3 ? 'text-accent' : ''}">${medal} ${position}</td>
+                        <td class="px-6 py-4 font-semibold">${name}</td>
+                        <td class="px-6 py-4 text-gray-600">${identifier}</td>
+                        <td class="px-6 py-4 font-bold text-primary text-xl">${parseFloat(rank.total_score).toFixed(2)}</td>
+                        <td class="px-6 py-4">
+                            <button onclick="viewDetails(${rank.participant_id || rank.team_id})" class="text-accent hover:underline text-sm" data-testid="view-details-${position}">View Details</button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+        
+        function viewDetails(id) {
+            showNotification('Detailed score breakdown coming soon', 'info');
+        }
+        
+        loadComponent('sidebar-container', '/components/sidebar.html');
+        loadComponent('navbar-container', '/components/navbar.html');
+        loadComponent('footer-container', '/components/footer.html');
+        initRankings();
+    </script>
+</body>
+</html>

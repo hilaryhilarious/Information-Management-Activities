@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Announcements - EvenTrix</title>
+    <link href="/assets/css/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .main-content { margin-left: 256px; }
+    </style>
+</head>
+<body class="bg-soft">
+    <div id="sidebar-container"></div>
+    
+    <div class="main-content min-h-screen">
+        <div id="navbar-container"></div>
+        
+        <main class="p-8">
+            <div class="mb-8 flex justify-between items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-primary" data-testid="announcements-title">Announcements</h2>
+                    <p class="text-gray-600 mt-2">System updates and event notifications</p>
+                </div>
+                <button onclick="showCreateModal()" class="btn-primary admin-only" data-testid="create-announcement-btn">+ New Announcement</button>
+            </div>
+            
+            <div id="announcementsList" class="space-y-4" data-testid="announcements-list">
+                <p class="text-gray-500">Loading announcements...</p>
+            </div>
+        </main>
+        
+        <div id="footer-container"></div>
+    </div>
+    
+    <script src="/assets/js/main.js"></script>
+    <script>
+        async function loadComponent(elementId, componentPath) {
+            const response = await fetch(componentPath);
+            const html = await response.text();
+            document.getElementById(elementId).innerHTML = html;
+        }
+        
+        async function initAnnouncements() {
+            const user = await checkAuth();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+            displayPlaceholderAnnouncements();
+        }
+        
+        function displayPlaceholderAnnouncements() {
+            const container = document.getElementById('announcementsList');
+            container.innerHTML = `
+                <div class="card border-l-4 border-accent" data-testid="announcement-item-1">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-bold text-primary">System Launch</h3>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700">High Priority</span>
+                    </div>
+                    <p class="text-gray-600 mb-3">EvenTrix Multi-Event Scoring System is now live! Start creating events and managing scores.</p>
+                    <div class="text-sm text-gray-500">
+                        <span>Posted: ${new Date().toLocaleDateString()}</span>
+                    </div>
+                </div>
+                <div class="card border-l-4 border-blue-500" data-testid="announcement-item-2">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-bold text-primary">Welcome to MINSU Sports Week</h3>
+                        <span class="px-3 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700">Medium Priority</span>
+                    </div>
+                    <p class="text-gray-600 mb-3">All participants and judges, please check your event assignments and schedules.</p>
+                    <div class="text-sm text-gray-500">
+                        <span>Posted: ${new Date().toLocaleDateString()}</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function showCreateModal() {
+            showNotification('Create announcement functionality coming soon', 'info');
+        }
+        
+        loadComponent('sidebar-container', '/components/sidebar.html');
+        loadComponent('navbar-container', '/components/navbar.html');
+        loadComponent('footer-container', '/components/footer.html');
+        initAnnouncements();
+    </script>
+</body>
+</html>

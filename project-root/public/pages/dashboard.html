@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EvenTrix</title>
+    <link href="/assets/css/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .main-content { margin-left: 256px; }
+    </style>
+</head>
+<body class="bg-soft">
+    <div id="sidebar-container"></div>
+    
+    <div class="main-content min-h-screen">
+        <div id="navbar-container"></div>
+        
+        <main class="p-8">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-primary" data-testid="dashboard-title">Dashboard</h2>
+                <p class="text-gray-600 mt-2">Welcome to EvenTrix Event Management System</p>
+            </div>
+            
+            <!-- Stats Grid -->
+            <div class="grid md:grid-cols-4 gap-6 mb-8">
+                <div class="card bg-gradient-to-br from-accent to-primary text-white" data-testid="stat-card-total-events">
+                    <h3 class="text-lg font-semibold mb-2">Total Events</h3>
+                    <p class="text-4xl font-bold" id="totalEvents">0</p>
+                </div>
+                <div class="card bg-gradient-to-br from-blue-500 to-blue-700 text-white" data-testid="stat-card-ongoing-events">
+                    <h3 class="text-lg font-semibold mb-2">Ongoing Events</h3>
+                    <p class="text-4xl font-bold" id="ongoingEvents">0</p>
+                </div>
+                <div class="card bg-gradient-to-br from-orange-500 to-orange-700 text-white" data-testid="stat-card-participants">
+                    <h3 class="text-lg font-semibold mb-2">Total Participants</h3>
+                    <p class="text-4xl font-bold" id="totalParticipants">0</p>
+                </div>
+                <div class="card bg-gradient-to-br from-purple-500 to-purple-700 text-white" data-testid="stat-card-judges">
+                    <h3 class="text-lg font-semibold mb-2">Active Judges</h3>
+                    <p class="text-4xl font-bold" id="activeJudges">0</p>
+                </div>
+            </div>
+            
+            <!-- Recent Events -->
+            <div class="card mb-8">
+                <h3 class="text-2xl font-bold text-primary mb-4" data-testid="recent-events-heading">Recent Events</h3>
+                <div id="recentEventsList" class="space-y-4" data-testid="recent-events-list">
+                    <p class="text-gray-500">Loading events...</p>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="card">
+                <h3 class="text-2xl font-bold text-primary mb-4" data-testid="quick-actions-heading">Quick Actions</h3>
+                <div class="grid md:grid-cols-3 gap-4">
+                    <a href="/pages/events.html" class="btn-primary text-center" data-testid="quick-action-view-events">View All Events</a>
+                    <a href="/pages/live-scores.html" class="btn-secondary text-center" data-testid="quick-action-live-scores">View Live Scores</a>
+                    <a href="/pages/schedule.html" class="btn-secondary text-center" data-testid="quick-action-schedule">View Schedule</a>
+                </div>
+            </div>
+        </main>
+        
+        <div id="footer-container"></div>
+    </div>
+    
+    <script src="/assets/js/main.js"></script>
+    <script>
+        // Load components
+        async function loadComponent(elementId, componentPath) {
+            try {
+                const response = await fetch(componentPath);
+                const html = await response.text();
+                document.getElementById(elementId).innerHTML = html;
+            } catch (error) {
+                console.error('Error loading component:', error);
+            }
+        }
+        
+        // Check authentication
+        async function initDashboard() {
+            const user = await checkAuth();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+            
+            // Update user info in sidebar
+            setTimeout(() => {
+                const userNameEl = document.getElementById('sidebarUserName');
+                const userRoleEl = document.getElementById('sidebarUserRole');
+                if (userNameEl) userNameEl.textContent = user.name;
+                if (userRoleEl) userRoleEl.textContent = user.role;
+            }, 500);
+            
+            loadDashboardData();
+        }
+        
+        // Load dashboard statistics
+        async function loadDashboardData() {
+            try {
+                const eventsRes = await fetch('/api/get_events.php');
+                const eventsData = await eventsRes.json();
+                
+                if (eventsData.success) {
+                    const events = eventsData.events;
+                    document.getElementById('totalEvents').textContent = events.length;
+                    document.getElementById('ongoingEvents').textContent = events.filter(e => e.status === 'ongoing').length;
+                    
+                    // Display recent events
+                    const recentEventsList = document.getElementById('recentEventsList');
+                    if (events.length > 0) {
+                        recentEventsList.innerHTML = events.slice(0, 5).map(event => `
+                            <div class="border-l-4 border-accent pl-4 py-2" data-testid="event-item-${event.event_id}">
+                                <h4 class="font-bold text-lg text-primary">${event.event_name}</h4>
+                                <p class="text-gray-600 text-sm">${event.description || 'No description'}</p>
+                                <div class="flex items-center mt-2 space-x-4 text-sm text-gray-500">
+                                    <span class="px-3 py-1 rounded-full ${event.status === 'ongoing' ? 'bg-green-100 text-green-700' : event.status === 'upcoming' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}">${event.status}</span>
+                                    <span>👥 ${event.participant_count} participants</span>
+                                </div>
+                            </div>
+                        `).join('');
+                    } else {
+                        recentEventsList.innerHTML = '<p class="text-gray-500">No events found</p>';
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading dashboard data:', error);
+            }
+        }
+        
+        // Initialize
+        loadComponent('sidebar-container', '/components/sidebar.html');
+        loadComponent('navbar-container', '/components/navbar.html');
+        loadComponent('footer-container', '/components/footer.html');
+        initDashboard();
+    </script>
+</body>
+</html>

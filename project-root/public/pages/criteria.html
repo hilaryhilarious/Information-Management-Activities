@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Criteria - EvenTrix</title>
+    <link href="/assets/css/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .main-content { margin-left: 256px; }
+    </style>
+</head>
+<body class="bg-soft">
+    <div id="sidebar-container"></div>
+    
+    <div class="main-content min-h-screen">
+        <div id="navbar-container"></div>
+        
+        <main class="p-8">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-primary" data-testid="criteria-title">Scoring Criteria</h2>
+                <p class="text-gray-600 mt-2">Define and manage event scoring criteria</p>
+            </div>
+            
+            <div class="card mb-8">
+                <label class="block text-gray-700 font-semibold mb-2">Select Event</label>
+                <select id="eventSelector" class="input-field" data-testid="criteria-event-selector">
+                    <option value="">Loading events...</option>
+                </select>
+            </div>
+            
+            <div class="card" id="criteriaContent" data-testid="criteria-content">
+                <p class="text-gray-500">Select an event to view criteria</p>
+            </div>
+        </main>
+        
+        <div id="footer-container"></div>
+    </div>
+    
+    <script src="/assets/js/main.js"></script>
+    <script>
+        async function loadComponent(elementId, componentPath) {
+            const response = await fetch(componentPath);
+            const html = await response.text();
+            document.getElementById(elementId).innerHTML = html;
+        }
+        
+        async function initCriteria() {
+            const user = await checkAuth();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+            loadEvents();
+        }
+        
+        async function loadEvents() {
+            try {
+                const response = await fetch('/api/get_events.php');
+                const data = await response.json();
+                
+                if (data.success) {
+                    const select = document.getElementById('eventSelector');
+                    select.innerHTML = '<option value="">Select an event</option>' + 
+                        data.events.map(e => `<option value="${e.event_id}">${e.event_name}</option>`).join('');
+                }
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+        
+        document.getElementById('eventSelector').addEventListener('change', async (e) => {
+            const eventId = e.target.value;
+            if (eventId) {
+                await loadCriteria(eventId);
+            }
+        });
+        
+        async function loadCriteria(eventId) {
+            try {
+                const response = await fetch(`/api/get_criteria.php?event_id=${eventId}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayCriteria(data.criteria);
+                }
+            } catch (error) {
+                console.error('Error loading criteria:', error);
+            }
+        }
+        
+        function displayCriteria(criteria) {
+            const container = document.getElementById('criteriaContent');
+            if (criteria.length === 0) {
+                container.innerHTML = '<p class="text-gray-500">No criteria defined for this event</p>';
+                return;
+            }
+            
+            container.innerHTML = `
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="px-6 py-3 text-left">Criteria Name</th>
+                                <th class="px-6 py-3 text-left">Description</th>
+                                <th class="px-6 py-3 text-left">Weight</th>
+                                <th class="px-6 py-3 text-left">Max Score</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${criteria.map(c => `
+                                <tr class="border-b hover:bg-soft transition-colors" data-testid="criteria-row-${c.criteria_id}">
+                                    <td class="px-6 py-4 font-semibold text-primary">${c.criteria_name}</td>
+                                    <td class="px-6 py-4 text-gray-600">${c.description || '-'}</td>
+                                    <td class="px-6 py-4 font-bold">${c.weight}</td>
+                                    <td class="px-6 py-4">${c.max_score}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+        
+        loadComponent('sidebar-container', '/components/sidebar.html');
+        loadComponent('navbar-container', '/components/navbar.html');
+        loadComponent('footer-container', '/components/footer.html');
+        initCriteria();
+    </script>
+</body>
+</html>

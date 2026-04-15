@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EvenTrix - Multi-Event Scoring System</title>
+    <link href="/assets/css/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-bg {
+            background-image: linear-gradient(rgba(15, 63, 46, 0.8), rgba(15, 63, 46, 0.9)), url('https://images.unsplash.com/photo-1771909713672-4e351f1f8b62?crop=entropy&cs=srgb&fm=jpg&q=85');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <!-- Navigation -->
+    <nav class="bg-primary text-white py-4 shadow-lg fixed w-full top-0 z-50">
+        <div class="container mx-auto px-4 flex justify-between items-center">
+            <div class="flex items-center space-x-3">
+                <img src="https://images.unsplash.com/photo-1721441906254-b5d28d9114f4?crop=entropy&cs=srgb&fm=jpg&w=150&q=85" alt="MINSU Logo" class="h-12 w-12 rounded-full object-cover">
+                <div>
+                    <h1 class="text-2xl font-bold">EvenTrix</h1>
+                    <p class="text-xs text-soft">Mindoro State University</p>
+                </div>
+            </div>
+            <div class="space-x-4">
+                <a href="/login.html" class="px-4 py-2 text-white hover:text-soft transition-colors">Login</a>
+                <a href="/register.html" class="px-6 py-2 bg-accent hover:bg-soft hover:text-primary rounded-lg font-semibold transition-colors">Register</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-bg min-h-screen flex items-center justify-center text-white pt-20">
+        <div class="container mx-auto px-4 text-center">
+            <h2 class="text-5xl md:text-6xl font-bold mb-6" data-testid="hero-title">Automated Multi-Event Scoring System</h2>
+            <p class="text-xl md:text-2xl mb-8 text-soft" data-testid="hero-subtitle">Real-time rankings, live scores, and comprehensive event management for Mindoro State University</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="/pages/live-scores.html" class="btn-primary text-lg" data-testid="view-live-scores-btn">View Live Scores</a>
+                <a href="/pages/events.html" class="bg-white text-primary hover:bg-soft font-semibold py-3 px-8 rounded-lg transition-colors text-lg" data-testid="browse-events-btn">Browse Events</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-20 bg-white">
+        <div class="container mx-auto px-4">
+            <h3 class="text-4xl font-bold text-center mb-12 text-primary" data-testid="features-heading">Key Features</h3>
+            <div class="grid md:grid-cols-3 gap-8">
+                <div class="card text-center" data-testid="feature-card-scoring">
+                    <div class="text-5xl mb-4 text-accent">📊</div>
+                    <h4 class="text-xl font-bold mb-3 text-primary">Automated Scoring</h4>
+                    <p class="text-gray-600">Intelligent computation of scores with weighted criteria and real-time ranking updates</p>
+                </div>
+                <div class="card text-center" data-testid="feature-card-live">
+                    <div class="text-5xl mb-4 text-accent">⚡</div>
+                    <h4 class="text-xl font-bold mb-3 text-primary">Live Updates</h4>
+                    <p class="text-gray-600">Real-time score display and instant ranking updates for all stakeholders</p>
+                </div>
+                <div class="card text-center" data-testid="feature-card-multi">
+                    <div class="text-5xl mb-4 text-accent">🏆</div>
+                    <h4 class="text-xl font-bold mb-3 text-primary">Multi-Event Support</h4>
+                    <p class="text-gray-600">Manage multiple events simultaneously with comprehensive analytics</p>
+                </div>
+                <div class="card text-center" data-testid="feature-card-roles">
+                    <div class="text-5xl mb-4 text-accent">👥</div>
+                    <h4 class="text-xl font-bold mb-3 text-primary">Role Management</h4>
+                    <p class="text-gray-600">Secure access control for admins, managers, judges, and users</p>
+                </div>
+                <div class="card text-center" data-testid="feature-card-analytics">
+                    <div class="text-5xl mb-4 text-accent">📈</div>
+                    <h4 class="text-xl font-bold mb-3 text-primary">Analytics & Reports</h4>
+                    <p class="text-gray-600">Detailed performance insights and exportable reports</p>
+                </div>
+                <div class="card text-center" data-testid="feature-card-schedule">
+                    <div class="text-5xl mb-4 text-accent">📅</div>
+                    <h4 class="text-xl font-bold mb-3 text-primary">Schedule Management</h4>
+                    <p class="text-gray-600">Complete event timeline and venue coordination tools</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="py-20 bg-soft">
+        <div class="container mx-auto px-4">
+            <div class="grid md:grid-cols-4 gap-8 text-center">
+                <div data-testid="stat-events">
+                    <div class="text-4xl font-bold text-primary" id="stat-events">0</div>
+                    <p class="text-gray-600 mt-2">Active Events</p>
+                </div>
+                <div data-testid="stat-participants">
+                    <div class="text-4xl font-bold text-primary" id="stat-participants">0</div>
+                    <p class="text-gray-600 mt-2">Total Participants</p>
+                </div>
+                <div data-testid="stat-judges">
+                    <div class="text-4xl font-bold text-primary" id="stat-judges">0</div>
+                    <p class="text-gray-600 mt-2">Active Judges</p>
+                </div>
+                <div data-testid="stat-scores">
+                    <div class="text-4xl font-bold text-primary" id="stat-scores">0</div>
+                    <p class="text-gray-600 mt-2">Scores Submitted</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="py-20 bg-primary text-white">
+        <div class="container mx-auto px-4 text-center">
+            <h3 class="text-4xl font-bold mb-6" data-testid="cta-heading">Ready to Get Started?</h3>
+            <p class="text-xl mb-8 text-soft">Join us in revolutionizing event management and scoring</p>
+            <a href="/register.html" class="btn-primary bg-accent hover:bg-soft hover:text-primary text-lg" data-testid="cta-register-btn">Create Account</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white py-8">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2026 EvenTrix - Mindoro State University. All rights reserved.</p>
+            <p class="text-sm text-soft mt-2">Automated Multi-Event Scoring and Ranking System</p>
+        </div>
+    </footer>
+
+    <script src="/assets/js/main.js"></script>
+    <script>
+        // Load statistics
+        async function loadStats() {
+            try {
+                const eventsRes = await fetch('/api/get_events.php');
+                const eventsData = await eventsRes.json();
+                if (eventsData.success) {
+                    document.getElementById('stat-events').textContent = eventsData.events.length;
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+        
+        loadStats();
+    </script>
+</body>
+</html>

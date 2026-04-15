@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - EvenTrix</title>
+    <link href="/assets/css/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .main-content { margin-left: 256px; }
+    </style>
+</head>
+<body class="bg-soft">
+    <div id="sidebar-container"></div>
+    
+    <div class="main-content min-h-screen">
+        <div id="navbar-container"></div>
+        
+        <main class="p-8">
+            <div class="mb-8 flex justify-between items-center">
+                <div>
+                    <h2 class="text-3xl font-bold text-primary" data-testid="users-title">User Management</h2>
+                    <p class="text-gray-600 mt-2">Manage system users and roles</p>
+                </div>
+                <button onclick="showAddUserModal()" class="btn-primary" data-testid="add-user-btn">+ Add User</button>
+            </div>
+            
+            <div class="card">
+                <div class="overflow-x-auto">
+                    <table class="w-full" data-testid="users-table">
+                        <thead class="bg-primary text-white">
+                            <tr>
+                                <th class="px-6 py-3 text-left">ID</th>
+                                <th class="px-6 py-3 text-left">Name</th>
+                                <th class="px-6 py-3 text-left">Email</th>
+                                <th class="px-6 py-3 text-left">Role</th>
+                                <th class="px-6 py-3 text-left">Status</th>
+                                <th class="px-6 py-3 text-left">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersBody" data-testid="users-body">
+                            <tr>
+                                <td colspan="6" class="text-center py-8 text-gray-500">Loading users...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+        
+        <div id="footer-container"></div>
+    </div>
+    
+    <script src="/assets/js/main.js"></script>
+    <script>
+        async function loadComponent(elementId, componentPath) {
+            const response = await fetch(componentPath);
+            const html = await response.text();
+            document.getElementById(elementId).innerHTML = html;
+        }
+        
+        async function initUsers() {
+            const user = await checkAuth();
+            if (!user || user.role !== 'Admin') {
+                window.location.href = '/pages/dashboard.html';
+                return;
+            }
+            displayPlaceholderUsers();
+        }
+        
+        function displayPlaceholderUsers() {
+            const tbody = document.getElementById('usersBody');
+            tbody.innerHTML = `
+                <tr class="border-b hover:bg-soft transition-colors" data-testid="user-row-1">
+                    <td class="px-6 py-4 font-semibold">1</td>
+                    <td class="px-6 py-4">Admin User</td>
+                    <td class="px-6 py-4 text-gray-600">admin@eventrix.com</td>
+                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-semibold bg-accent text-white">Admin</span></td>
+                    <td class="px-6 py-4"><span class="px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-700">Active</span></td>
+                    <td class="px-6 py-4">
+                        <button onclick="editUser(1)" class="text-accent hover:underline text-sm" data-testid="edit-user-1">Edit</button>
+                    </td>
+                </tr>
+            `;
+        }
+        
+        function showAddUserModal() {
+            showNotification('Add user functionality coming soon', 'info');
+        }
+        
+        function editUser(id) {
+            showNotification('Edit user functionality coming soon', 'info');
+        }
+        
+        loadComponent('sidebar-container', '/components/sidebar.html');
+        loadComponent('navbar-container', '/components/navbar.html');
+        loadComponent('footer-container', '/components/footer.html');
+        initUsers();
+    </script>
+</body>
+</html>

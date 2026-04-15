@@ -1,0 +1,58 @@
+<aside class="bg-primary text-white h-screen w-64 fixed left-0 top-0 overflow-y-auto" data-testid="sidebar">
+    <div class="p-6">
+        <div class="flex items-center space-x-3 mb-8">
+            <img src="https://images.unsplash.com/photo-1721441906254-b5d28d9114f4?crop=entropy&cs=srgb&fm=jpg&w=150&q=85" alt="MINSU Logo" class="h-12 w-12 rounded-full object-cover">
+            <div>
+                <h1 class="text-xl font-bold">EvenTrix</h1>
+                <p class="text-xs text-soft">Mindoro State University</p>
+            </div>
+        </div>
+        
+        <nav>
+            <a href="/pages/dashboard.html" class="sidebar-link mb-2" data-testid="nav-dashboard">
+                <span class="mr-3">🏠</span> Dashboard
+            </a>
+            <a href="/pages/events.html" class="sidebar-link mb-2" data-testid="nav-events">
+                <span class="mr-3">🎮</span> Events
+            </a>
+            <a href="/pages/participants.html" class="sidebar-link mb-2" data-testid="nav-participants">
+                <span class="mr-3">👥</span> Participants
+            </a>
+            <a href="/pages/criteria.html" class="sidebar-link mb-2" data-testid="nav-criteria">
+                <span class="mr-3">📋</span> Criteria
+            </a>
+            <a href="/pages/scoring.html" class="sidebar-link mb-2" data-testid="nav-scoring">
+                <span class="mr-3">⭐</span> Scoring
+            </a>
+            <a href="/pages/rankings.html" class="sidebar-link mb-2" data-testid="nav-rankings">
+                <span class="mr-3">🏆</span> Rankings
+            </a>
+            <a href="/pages/live-scores.html" class="sidebar-link mb-2" data-testid="nav-live-scores">
+                <span class="mr-3">⚡</span> Live Scores
+            </a>
+            <a href="/pages/schedule.html" class="sidebar-link mb-2" data-testid="nav-schedule">
+                <span class="mr-3">📅</span> Schedule
+            </a>
+            <a href="/pages/analytics.html" class="sidebar-link mb-2" data-testid="nav-analytics">
+                <span class="mr-3">📈</span> Analytics
+            </a>
+            <a href="/pages/announcements.html" class="sidebar-link mb-2" data-testid="nav-announcements">
+                <span class="mr-3">📢</span> Announcements
+            </a>
+            <a href="/pages/users.html" class="sidebar-link mb-2 admin-only" data-testid="nav-users">
+                <span class="mr-3">👤</span> Users
+            </a>
+            <a href="/pages/settings.html" class="sidebar-link mb-2" data-testid="nav-settings">
+                <span class="mr-3">⚙️</span> Settings
+            </a>
+        </nav>
+    </div>
+    
+    <div class="p-6 mt-auto">
+        <div class="border-t border-soft pt-4">
+            <p class="text-xs text-soft mb-2" id="sidebarUserRole" data-testid="sidebar-user-role">Role</p>
+            <p class="text-sm font-semibold" id="sidebarUserName" data-testid="sidebar-user-name">User Name</p>
+            <button onclick="logout()" class="mt-4 w-full px-4 py-2 bg-accent hover:bg-soft hover:text-primary rounded-lg text-sm transition-colors" data-testid="sidebar-logout-btn">Logout</button>
+        </div>
+    </div>
+</aside>

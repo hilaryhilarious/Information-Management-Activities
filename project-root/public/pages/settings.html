@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - EvenTrix</title>
+    <link href="/assets/css/output.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .main-content { margin-left: 256px; }
+    </style>
+</head>
+<body class="bg-soft">
+    <div id="sidebar-container"></div>
+    
+    <div class="main-content min-h-screen">
+        <div id="navbar-container"></div>
+        
+        <main class="p-8">
+            <div class="mb-8">
+                <h2 class="text-3xl font-bold text-primary" data-testid="settings-title">Settings</h2>
+                <p class="text-gray-600 mt-2">Configure your system preferences</p>
+            </div>
+            
+            <!-- Profile Settings -->
+            <div class="card mb-8">
+                <h3 class="text-2xl font-bold text-primary mb-6" data-testid="profile-settings-heading">Profile Settings</h3>
+                <form id="profileForm" data-testid="profile-form">
+                    <div class="grid md:grid-cols-2 gap-6 mb-6">
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">First Name</label>
+                            <input type="text" id="firstName" class="input-field" placeholder="First name" data-testid="first-name-input">
+                        </div>
+                        <div>
+                            <label class="block text-gray-700 font-semibold mb-2">Last Name</label>
+                            <input type="text" id="lastName" class="input-field" placeholder="Last name" data-testid="last-name-input">
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-2">Email</label>
+                        <input type="email" id="email" class="input-field" placeholder="your@email.com" data-testid="email-input">
+                    </div>
+                    <button type="submit" class="btn-primary" data-testid="save-profile-btn">Save Changes</button>
+                </form>
+            </div>
+            
+            <!-- Password Change -->
+            <div class="card mb-8">
+                <h3 class="text-2xl font-bold text-primary mb-6" data-testid="password-settings-heading">Change Password</h3>
+                <form id="passwordForm" data-testid="password-form">
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-2">Current Password</label>
+                        <input type="password" id="currentPassword" class="input-field" data-testid="current-password-input">
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 font-semibold mb-2">New Password</label>
+                        <input type="password" id="newPassword" class="input-field" data-testid="new-password-input">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 font-semibold mb-2">Confirm New Password</label>
+                        <input type="password" id="confirmPassword" class="input-field" data-testid="confirm-password-input">
+                    </div>
+                    <button type="submit" class="btn-primary" data-testid="change-password-btn">Change Password</button>
+                </form>
+            </div>
+            
+            <!-- System Info -->
+            <div class="card">
+                <h3 class="text-2xl font-bold text-primary mb-6" data-testid="system-info-heading">System Information</h3>
+                <div class="space-y-3 text-gray-600">
+                    <p><strong>System:</strong> EvenTrix v1.0</p>
+                    <p><strong>Institution:</strong> Mindoro State University</p>
+                    <p><strong>Database:</strong> MySQL</p>
+                </div>
+            </div>
+        </main>
+        
+        <div id="footer-container"></div>
+    </div>
+    
+    <script src="/assets/js/main.js"></script>
+    <script>
+        async function loadComponent(elementId, componentPath) {
+            const response = await fetch(componentPath);
+            const html = await response.text();
+            document.getElementById(elementId).innerHTML = html;
+        }
+        
+        async function initSettings() {
+            const user = await checkAuth();
+            if (!user) {
+                window.location.href = '/login.html';
+                return;
+            }
+        }
+        
+        document.getElementById('profileForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showNotification('Profile update functionality coming soon', 'info');
+        });
+        
+        document.getElementById('passwordForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            showNotification('Password change functionality coming soon', 'info');
+        });
+        
+        loadComponent('sidebar-container', '/components/sidebar.html');
+        loadComponent('navbar-container', '/components/navbar.html');
+        loadComponent('footer-container', '/components/footer.html');
+        initSettings();
+    </script>
+</body>
+</html>
